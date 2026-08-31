@@ -534,12 +534,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="stats-row">
-    <span class="stat-chip sc-blue" id="chipAll" onclick="chipFilter('all',this)" title="Show all">21 Total (17 homes + 4 lots)</span>
+    <span class="stat-chip sc-blue" id="chipAll" onclick="chipFilter('all',this)" title="Show all">245 Total (241 homes + 4 lots)</span>
     <span class="stat-chip sc-green" id="chipPass" onclick="chipFilter('clean',this)" title="Filter: Pass only">&#10003; 3 Pass</span>
     <span class="stat-chip sc-purple" id="chipLotUnk" onclick="chipFilter('lot_unknown',this)" title="Filter: Lot size unknown">&#63; 0 Lot?</span>
     <span class="stat-chip sc-amber" id="chipFlag" onclick="chipFilter('flagged',this)" title="Filter: Flagged only">&#9888; 1 Flagged</span>
     <span class="stat-chip sc-red" id="chipExcl" onclick="chipFilter('excluded',this)" title="Filter: Excluded only">&#10007; 3 Excluded</span>
-    <span class="stat-chip">7 Towns</span>
+    <span class="stat-chip">24 Towns</span>
   </div>
 </header>
 
@@ -559,9 +559,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- TAB NAV -->
 <div class="tab-nav">
-  <button class="tab-btn tab-active" id="tab-btn-homes" onclick="switchTab('homes')">&#127968; Homes for Sale (21)</button>
+  <button class="tab-btn tab-active" id="tab-btn-homes" onclick="switchTab('homes')">&#127968; Homes for Sale (245)</button>
   <button class="tab-btn" id="tab-btn-fsbo" onclick="switchTab('fsbo')">&#9757; FSBO / Off-Market (0)</button>
-  <button class="tab-btn" id="tab-btn-sheriff" onclick="switchTab('sheriff')">&#9878; Sheriff Sales (81)</button>
+  <button class="tab-btn" id="tab-btn-sheriff" onclick="switchTab('sheriff')">&#9878; Sheriff Sales (108)</button>
   <button class="tab-btn" id="tab-btn-multifamily" onclick="switchTab('multifamily')">&#127968; Multi-Family 1-4 (36)</button>
 </div>
 
@@ -605,8 +605,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- FILTER ROW 2: Towns — dedicated row -->
 <div class="filter-bar filter-row-towns">
   <span class="filter-label">Town</span>
-  <button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('All',this)">All Towns</button>
-  <button class="fbtn" onclick="setTownFilter('Cresskill', this)">Cresskill</button><button class="fbtn" onclick="setTownFilter('Glen Rock', this)">Glen Rock</button><button class="fbtn" onclick="setTownFilter('Harrington Park', this)">Harrington Park</button><button class="fbtn" onclick="setTownFilter('Montville', this)">Montville</button><button class="fbtn" onclick="setTownFilter('Norwood', this)">Norwood</button><button class="fbtn" onclick="setTownFilter('Woodcliff Lake', this)">Woodcliff Lake</button><button class="fbtn" onclick="setTownFilter('Paramus', this)">Paramus</button>
+  <!--TOWNCHIPS_START--><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('All',this)">All Towns</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Bloomfield', this)">Bloomfield</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Closter', this)">Closter</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Cresskill', this)">Cresskill</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Demarest', this)">Demarest</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Dumont', this)">Dumont</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Glen Ridge', this)">Glen Ridge</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Glen Rock', this)">Glen Rock</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Harrington Park', this)">Harrington Park</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Haworth', this)">Haworth</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Hillsdale', this)">Hillsdale</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Ho-Ho-Kus', this)">Ho-Ho-Kus</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Maplewood', this)">Maplewood</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Montclair', this)">Montclair</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Montville', this)">Montville</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Norwood', this)">Norwood</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Old Tappan', this)">Old Tappan</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Paramus', this)">Paramus</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Ridgewood', this)">Ridgewood</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('River Vale', this)">River Vale</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('South Orange', this)">South Orange</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Tenafly', this)">Tenafly</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Verona', this)">Verona</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Woodcliff Lake', this)">Woodcliff Lake</button><button class="fbtn active" id="allTownsBtn" onclick="setTownFilter('Wyckoff', this)">Wyckoff</button><!--TOWNCHIPS_END-->
 </div>
 
 <!-- FILTER ROW 3: Price Range Slider + Quick buttons — all on one line -->
@@ -676,7 +675,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- MAIN CONTENT -->
 <div class="content">
-  <div class="results-count" id="resultsCount">Showing all 248 listings</div>
+  <div class="results-count" id="resultsCount">Showing all 245 listings</div>
 
 <!-- MAIN CONTENT -->
 <div class="content">
