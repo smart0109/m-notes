@@ -596,7 +596,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="fbtn av-chip" data-av="FOR_SALE" onclick="setAvail('FOR_SALE',this)" style="border-color:#86efac">&#9989; For sale <span class="av-n"></span></button>
   <button class="fbtn av-chip" data-av="UNDER_CONTRACT" onclick="setAvail('UNDER_CONTRACT',this)" style="border-color:#c4b5fd">&#128274; Under contract <span class="av-n"></span></button>
   <button class="fbtn av-chip" data-av="NOT_FOR_SALE" onclick="setAvail('NOT_FOR_SALE',this)" style="border-color:#cbd5e1">&#10060; Not for sale <span class="av-n"></span></button>
+  <div class="filter-sep"></div>
+  <span class="filter-label">Value</span>
+  <button class="fbtn val-chip active" data-val="All" onclick="setVal('All',this)">All</button>
+  <button class="fbtn val-chip" data-val="VALUE" onclick="setVal('VALUE',this)" style="border-color:#6ee7b7" title="List price under the MOD-IV equalized assessed value (grade A 20%+, B 10%+, C 5%+). Assessment year is paired with the ratio-table year.">&#128142; Under equalized value <span class="val-n"></span></button>
 <!--AVAIL_BAR_END-->
+
 
 
   <div class="filter-sep"></div>
@@ -25415,15 +25420,17 @@ async function geocodeAddress(addr) {
 
 // ── PHOTO / AERIAL TAB TOGGLE ─────────────────────────────────
 function showPhoto(cardId, btn) {
-  document.getElementById('zillow_' + cardId).style.display = '';
-  document.getElementById('aerial_' + cardId).style.display = 'none';
+  var _z = document.getElementById('zillow_' + cardId), _a = document.getElementById('aerial_' + cardId);  // guarded 0921
+  if (_z) _z.style.display = '';
+  if (_a) _a.style.display = 'none';
   btn.closest('.img-tabs').querySelectorAll('.img-tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
 async function loadAerial(cardId, address, btn) {
-  document.getElementById('zillow_' + cardId).style.display = 'none';
-  document.getElementById('aerial_' + cardId).style.display = '';
+  var _z = document.getElementById('zillow_' + cardId), _a = document.getElementById('aerial_' + cardId);  // guarded 0921
+  if (_z) _z.style.display = 'none';
+  if (_a) _a.style.display = '';
   if (btn) {
     btn.closest('.img-tabs').querySelectorAll('.img-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -27067,10 +27074,12 @@ function toggleSheriffRepeat(btn) {
 <!--SHERIFF_FILTERS_END-->
 <!--TOP_DEALS_JS_START--><script>function jumpToDeal(el){var z=el.getAttribute('data-zpid');if(typeof switchTab==='function')switchTab('sheriff');setTimeout(function(){var c=document.querySelector('[data-zpid="'+CSS.escape(z)+'"]');if(!c)return;c.scrollIntoView({behavior:'smooth',block:'center'});var prev=c.style.boxShadow;c.style.boxShadow='0 0 0 4px #16a34a';setTimeout(function(){c.style.boxShadow=prev;},1600);},120);}function jumpToListing(el){var a=el.getAttribute('data-addr');if(typeof switchTab==='function')switchTab('homes');setTimeout(function(){var c=document.querySelector('.card[data-addr="'+CSS.escape(a)+'"]');if(!c)return;c.style.display='';c.scrollIntoView({behavior:'smooth',block:'center'});var prev=c.style.boxShadow;c.style.boxShadow='0 0 0 4px #16a34a';setTimeout(function(){c.style.boxShadow=prev;},1600);},120);}</script><!--TOP_DEALS_JS_END--><!--AVAIL_JS_START-->
 <script>
-// == Availability chips (patch_status_filters.py) ==
+// == Availability + Value chips, sqft-unknown handling (patch_status_filters.py) ==
 let activeAvail = 'All';
+let activeVal = 'All';
 function cardAvail(card) {
-  const rdc = card.dataset.rdc || '';
+  const pill = card.querySelector('[data-rdc]');
+  const rdc = (pill ? pill.dataset.rdc : card.dataset.rdc) || '';
   const ls = (card.dataset.listingStatus || '').toUpperCase();
   if (rdc === 'UNDER_CONTRACT') return 'UNDER_CONTRACT';
   if (rdc === 'OFF_MARKET' || ls === 'SOLD') return 'NOT_FOR_SALE';
@@ -27080,24 +27089,33 @@ function applyAvailFilter() {
   const tab = document.getElementById('tab-homes');
   if (!tab) return;
   const counts = {All:0, FOR_SALE:0, UNDER_CONTRACT:0, NOT_FOR_SALE:0};
-  let vis = 0;
+  let nval = 0, vis = 0, sqftUnknownHidden = 0;
+  const sqftOn = (typeof sqftMin !== 'undefined') && (sqftMin > 500 || sqftMax < 6000);
   tab.querySelectorAll('.card:not(.card-sheriff)').forEach(card => {
     const a = cardAvail(card);
-    counts.All++; counts[a]++;
-    if (card.style.display === 'none') return;          // already hidden by the other filters
+    const graded = 'ABC'.includes(card.dataset.deal || '0') && (card.dataset.deal || '0') !== '0';
+    counts.All++; counts[a]++; if (graded) nval++;
+    if (card.style.display === 'none') return;          // hidden by the base filters
     if (activeAvail !== 'All' && a !== activeAvail) { card.style.display = 'none'; return; }
+    if (activeVal === 'VALUE' && !graded) { card.style.display = 'none'; return; }
+    if (sqftOn && card.dataset.type === 'House' && !(parseInt(card.dataset.sqft) > 0)) {
+      card.style.display = 'none'; sqftUnknownHidden++; return;
+    }
     vis++;
   });
   document.querySelectorAll('.av-chip').forEach(b => {
     const n = b.querySelector('.av-n'); const k = b.dataset.av;
     if (n) n.textContent = '(' + (counts[k] || 0) + ')';
   });
-  if (activeAvail !== 'All') {
-    const rc = document.getElementById('resultsCount');
-    if (rc) rc.innerHTML = 'Showing <strong>' + vis + '</strong> listing' + (vis !== 1 ? 's' : '') +
-      ' &middot; ' + {FOR_SALE:'for sale', UNDER_CONTRACT:'under contract', NOT_FOR_SALE:'not for sale'}[activeAvail];
+  const vn = document.querySelector('.val-chip .val-n'); if (vn) vn.textContent = '(' + nval + ')';
+  const rc = document.getElementById('resultsCount');
+  if (rc && (activeAvail !== 'All' || activeVal !== 'All' || sqftUnknownHidden)) {
+    let t = 'Showing <strong>' + vis + '</strong> listing' + (vis !== 1 ? 's' : '');
+    if (activeAvail !== 'All') t += ' &middot; ' + {FOR_SALE:'for sale', UNDER_CONTRACT:'under contract', NOT_FOR_SALE:'not for sale'}[activeAvail];
+    if (activeVal !== 'All') t += ' &middot; under equalized value';
+    if (sqftUnknownHidden) t += ' &middot; ' + sqftUnknownHidden + ' with unknown sqft hidden';
+    rc.innerHTML = t;
   }
-  // collapse town sections that lost every card
   tab.querySelectorAll('.town-section').forEach(sec => {
     const any = Array.from(sec.querySelectorAll('.card:not(.card-sheriff)')).some(c => c.style.display !== 'none');
     sec.style.display = any ? '' : 'none';
@@ -27106,6 +27124,11 @@ function applyAvailFilter() {
 function setAvail(v, btn) {
   activeAvail = v;
   document.querySelectorAll('.av-chip').forEach(b => b.classList.toggle('active', b === btn));
+  applyFilters();
+}
+function setVal(v, btn) {
+  activeVal = v;
+  document.querySelectorAll('.val-chip').forEach(b => b.classList.toggle('active', b === btn));
   applyFilters();
 }
 (function () {
