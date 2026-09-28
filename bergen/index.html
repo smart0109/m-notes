@@ -29088,5 +29088,42 @@ function setVal(v, btn) {
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script><!--TOPPICKS_JS_END-->
+<!--FB_COLLAPSE_START-->
+<style>
+#fbToggle{display:none;width:100%;border:0;background:#f8fafc;padding:7px 16px;font:600 13px system-ui,sans-serif;color:#1e293b;cursor:pointer;text-align:left;align-items:center;gap:10px}
+#fbToggle:hover{background:#eef2ff}
+.filter-bar-sticky.fb-collapsed > *:not(#fbToggle){display:none !important}
+.filter-bar-sticky.fb-collapsed #fbToggle{display:flex}
+</style>
+<script>
+(function(){
+  function init(){
+    var w=document.getElementById('filterBarWrap');
+    if(!w||document.getElementById('fbToggle'))return;
+    var t=document.createElement('button'); t.id='fbToggle'; t.type='button';
+    w.insertBefore(t,w.firstChild);
+    var sent=document.createElement('div'); sent.id='fbSentinel';
+    var openedAt=null;
+    function label(){
+      var rc=document.getElementById('resultsCount');
+      t.innerHTML='&#9776; Filters &#9662; <span style="font-weight:400;color:#475569">'+(rc?rc.textContent:'')+' &middot; click to change</span>';
+    }
+    function upd(){
+      if(w.previousSibling!==sent) w.parentNode.insertBefore(sent,w);
+      var past = sent.getBoundingClientRect().top < -40;
+      if(!past) openedAt=null;
+      if(openedAt!==null && Math.abs(scrollY-openedAt)>400) openedAt=null;
+      w.classList.toggle('fb-collapsed', past && openedAt===null);
+      label();
+    }
+    t.addEventListener('click',function(){openedAt=scrollY; w.classList.remove('fb-collapsed');});
+    addEventListener('scroll',upd,{passive:true});
+    if(typeof applyFilters==='function'){var prev=applyFilters; applyFilters=function(){prev.apply(this,arguments); label();};}
+    upd();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
+})();
+</script>
+<!--FB_COLLAPSE_END-->
 </body>
 </html>
